@@ -15,55 +15,45 @@ public class MainApplication implements MyFrame {
 	private static boolean ResponseReceptionFlag;
 	private static boolean ConfirmationReceptionFlag;
 	private static boolean UserRequestFlag;
-
+	
+	private String dir;
+	private InetAddress LocalAdress;
+	private int LocalportUDP;
+	private int LocalportTCP;
+	
+	private InetAddress ClientAdress;
+	private int ClientPortUDP;
+	private int ClientPortTCP;
+	
+	private static String Filename;
+	
 	/**
 	 * Main Cote serveur
 	 * @throws IOException 
 	 * @throws NoSuchAlgorithmException 
 	 */
-	public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
+	public static void main(String[] args) throws NoSuchAlgorithmException, IOException {}
 
-
-		/* scanner pour recuperer les informations necessaires */
-		//Scanner sc =  new Scanner(System.in);
-		//Scanner sc1 =  new Scanner(System.in);
+	public MainApplication (String dir, String LocalAdress, int LocalportUDP, int LocalportTCP, String ClientAdress, int ClientPortUDP,  int ClientPortTCP ) throws UnknownHostException
+	{
+		this.dir = dir;
 		
-		//System.out.print("Veuillez entree le dossier contenant la liste des fichiers : ");
-		//String dir =  sc.nextLine();
-
-		//System.out.print("Veuillez entree l'adresse ip de votre machine : ");
-		//InetAddress LocalAdress = InetAddress.getByName(sc.nextLine());
-		//System.out.print("Veuillez entree le port d'ecoute pour les requetes UDP : ");
-		//int LocalportUDP = sc.nextInt();
-		//System.out.print("Veuillez entree le port d'ecoute pour les telechargement tcp : ");
-		//int LocalportTCP = sc.nextInt();
-
-		//System.out.print("Veuillez entree l'adresse ip du pair connu : ");
-		//InetAddress ClientAdress = InetAddress.getByName(sc1.nextLine());
-		//System.out.print("Veuillez entree le port d'ecoute UDP du pair connu : ");
-		//int ClientPortUDP = sc.nextInt();
-		//System.out.print("Veuillez entree le port d'ecoute UDP du pair connu : ");
-		//int ClientPortTCP = sc.nextInt();
-
-		/* fermeture du scanner apres utilisation */
-		//sc.close();
-		//sc1.close();
-
-		String dir = "C:\\Users\\Arnold\\Desktop\\fortunes";
-		InetAddress LocalAdress = InetAddress.getByName("127.0.0.1");
-		int LocalportUDP = 10000;
-		int LocalportTCP = 20000;
+		this.LocalAdress =  InetAddress.getByName(LocalAdress);
+		this.LocalportUDP = LocalportUDP;
+		this.LocalportTCP = LocalportTCP;
 		
-		InetAddress ClientAdress = InetAddress.getByName("127.0.0.1");
-		int ClientPortUDP = 10001;
-		int ClientPortTCP = 20001;
-		
-		
+		this.ClientAdress = InetAddress.getByName(LocalAdress);
+		this.ClientPortUDP = ClientPortUDP;
+		this.ClientPortTCP = ClientPortTCP;
+	}
+	
+		public void LancementRoutine () throws NoSuchAlgorithmException, IOException {
+
 		/* Liste des objets utiles a l'application */
 		Tank t = new Tank(dir);
 		Server s = new Server(LocalAdress,LocalportUDP,LocalportTCP);
 		Host h = new Host(ClientAdress,ClientPortUDP, ClientPortTCP);
-		IHM i = new IHM();
+		//IHM i = new IHM();
 		
 		/* lancement du reservoir de fichier */
 		t.initialiseTank();
@@ -77,16 +67,6 @@ public class MainApplication implements MyFrame {
 			}
 		};
 		threadUdpServer.start();
-		
-		/* lancement de la socket pour l ecoute dans un thread */ 
-		Thread threadUdpIHM = new Thread() {
-
-			public void run() {
-
-				i.LancementInterface ();
-			}
-		};
-		threadUdpIHM.start();
 		
 		 RequestReceptionFlag = false;
 		 ResponseReceptionFlag = false;
@@ -108,20 +88,21 @@ public class MainApplication implements MyFrame {
 				/* renseignement de la requete */
 				frameUdpRequest Request = new frameUdpRequest();
 				
-				Request = i.GetRequestReception();
+				//Request = i.GetRequestReception();
 
 				Request.RequestType = REQUESTTYPE.NameRequest;		/* pour le moment on choisis une requete de type name */
 
 				/* encodage de nom de fichier en UTF-8 */
-				//byte[] encodedHfWithUTF8 = null;
-				//try {
-				//	encodedHfWithUTF8 = hf.getBytes("UTF-8");
-			//	} catch (UnsupportedEncodingException e) {
+				byte[] encodedHfWithUTF8 = null;
+				try {
+					encodedHfWithUTF8 = Filename.getBytes("UTF-8");
+	
+				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
-					//e.printStackTrace();
-				//}
+					e.printStackTrace();
+				}
 
-			//	Request.nameOrHash = encodedHfWithUTF8;	/* pour le moment on desire telecharger le fichier bd */
+				Request.nameOrHash = encodedHfWithUTF8;	/* pour le moment on desire telecharger le fichier bd */
 				Request.lenght = 1;
 				Request.IpType = IPTYPE.IPV4;
 				Request.addr = LocalAdress.getAddress(); // 127.0.0.1
@@ -135,9 +116,7 @@ public class MainApplication implements MyFrame {
 			/* ---------------------------------- Reception d une requete ---------------------------------- */
 			if (RequestReceptionFlag == true)
 			{
-				RequestReceptionFlag = false;
-				
-				
+				RequestReceptionFlag = false;				
 
 				/* Traitement de la requete UDP */
 				frameUdpRequest Request = new frameUdpRequest();
@@ -242,20 +221,23 @@ public class MainApplication implements MyFrame {
 		}	
 	}
 
-	public void SetRequestReceptionFlag (){
+	static public void SetRequestReceptionFlag (){
 		RequestReceptionFlag = true;
 	}
 
-	public void SetResponseReceptionFlag (){
+	static public void SetResponseReceptionFlag (){
 		ResponseReceptionFlag = true;
 	}
 	
-	public void SetConfirmationReceptionFlag (){
+	static public void SetConfirmationReceptionFlag (){
 		ConfirmationReceptionFlag = true;
 	}
 
-	public void SetUserRequestFlag (){
+	static public void SetUserRequestFlag (){
 		UserRequestFlag = true;
 	}
 
+	static public void SetUserNameRequest (String name){
+		Filename = name ;
+	}
 }

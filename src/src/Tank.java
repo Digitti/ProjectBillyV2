@@ -279,7 +279,6 @@ public class Tank {
 
 				HashCourant.write(bytSHA);
 
-
 				/* mis a jour des flux d'entres et de sortie *//*
 				FileInputStream FichierSplitCourant = new FileInputStream(FichierSplitcourant);
 				String NomFichierSplitCourantRaccourcis = FichierSplitcourant.getName().substring(0, FichierSplitcourant.getName().length()-7);

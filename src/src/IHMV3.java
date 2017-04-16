@@ -12,8 +12,10 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.awt.event.ActionEvent;
 
 
@@ -144,7 +146,30 @@ public class IHMV3 implements MyFrame {
 				int sendTcp = Integer.parseInt(sTcpPort);
 			
 				// set objet mainApplication
-				
+				try {
+					MainApplication Application = new MainApplication (pathDir,  ipSrc, listenUdp, listenTcp, ipDst, sendUdp,  sendTcp );
+					
+					/* lancement de la socket pour l ecoute dans un thread */ 
+					Thread Routine = new Thread() {
+
+						public void run() {
+
+							try {
+								
+								Application.LancementRoutine();
+								
+							} catch (NoSuchAlgorithmException | IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					};
+					Routine.start();
+					
+				} catch (UnknownHostException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		
@@ -224,7 +249,13 @@ public class IHMV3 implements MyFrame {
 		JButton btnSend_File = new JButton("Send");
 		panel.add(btnSend_File);
 		btnSend_File.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
+				
+				String NameFile = textField_File.getText();
+				
+				MainApplication.SetUserNameRequest (NameFile);
+				MainApplication.SetUserRequestFlag ();
 				
 					/*if(CheckBox_ipV6.isSelected())
 					{
@@ -276,9 +307,6 @@ public class IHMV3 implements MyFrame {
 						frUR.nameOrHash = nameOrHash.getBytes();
 					}
 				}*/
-				
-				
-				
 			}
 		});
 		

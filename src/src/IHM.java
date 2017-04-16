@@ -84,7 +84,7 @@ public class IHM extends JFrame implements MyFrame {
 		//Rajouter cette ligne pour tester avec un serveur en meme temps
 		//MyJFrameServeur mjs = new MyJFrameServeur();
 		
-		MainApplication m = new MainApplication();
+		//MainApplication m = new MainApplication();
 		
 		/*
 		 * Ajout de tout les composants

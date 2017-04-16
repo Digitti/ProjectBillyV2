@@ -27,7 +27,7 @@ public class Server implements MyFrame {
 		this.LocalAdress = LocalAdress;
 		this.LocalportUDP = LocalportUDP;
 		this.LocalportTCP = LocalportTCP;
-		i = new MainApplication ();
+		//i = new MainApplication ();
 	}
 	
 	/**
@@ -80,13 +80,14 @@ public class Server implements MyFrame {
 	public void udpServer ()
 	{
 		try {
-			/* Creation de la socket utilise pour envoyer les donnees au serveur */
-			DatagramSocket server = new DatagramSocket(LocalportUDP, LocalAdress);
-			System.out.println("La socket d ecoute est lancee");
-			
+
 			/* ecoute du port a l infini */
 			while(true)
 			{
+				/* Creation de la socket utilise pour envoyer les donnees au serveur */
+				DatagramSocket server = new DatagramSocket(LocalportUDP, LocalAdress);
+				System.out.println("ecoute UDP ...");
+				
 				// packet pour recuperer la requete client 
 				byte [] Buffer =  new byte [8196];
 				DatagramPacket packet = new DatagramPacket(Buffer, Buffer.length);
@@ -115,7 +116,11 @@ public class Server implements MyFrame {
 					SetReceiveBuffer(receiveBuffer);	
 					i.SetConfirmationReceptionFlag();				
 				}
+				
+				/* close de la socket */
+				server.close();
 			}
+			
 			
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
